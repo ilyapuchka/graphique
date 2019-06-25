@@ -298,7 +298,29 @@ final class GraphiqueTests: XCTestCase {
 	}
 	
 	func testVariables() {
-		// TBD
+        func HeroQuery(episode: Episode = .jedi) -> GQLQuery<Hero> {
+            query {
+                hero {
+                    arguments {
+                        (\.episode, episode)
+                    }
+                    fields {
+                        \.name
+                    }
+                }
+            }
+        }
+
+		XCTAssertEqual(
+			HeroQuery().description,
+			"""
+			query HeroQuery {
+				hero(episode: JEDI) {
+					name
+				}
+			}
+			"""
+		)
 	}
 	
 	func testFragmentVariables() {
@@ -318,7 +340,24 @@ final class GraphiqueTests: XCTestCase {
 	}
 	
 	func testMetaFields() {
-		// TBD
+		let heroQuery = query("") {
+			hero {
+				\.__typename
+				\.name
+			}
+		}
+		
+		XCTAssertEqual(
+			heroQuery.description,
+			"""
+			query {
+				hero {
+					__typename
+					name
+				}
+			}
+			"""
+		)
 	}
     
 }

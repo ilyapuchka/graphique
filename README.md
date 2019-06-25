@@ -269,9 +269,44 @@ func HeroQuery() -> GQLQuery<Hero> {
 }
 ```
 
+In the last example the query will get the name of the function where it is defined.
+
 ### Variables
 
-TBD
+```graphql
+// GraphQL
+
+query HeroQuery($episode: Episode = JEDI) {
+  hero(episode: $episode) {
+    name
+  }
+}
+
+// Swift
+
+func HeroQuery(episode: Episode = .jedi) -> GQLQuery<Hero> {
+  query {
+    hero {
+      arguments {
+        (\.episode, episode)
+      }
+      fields {
+        \.name
+      }
+    }
+  }
+}
+```
+
+Note that the resulting query will have its parameters replaced with actuall values you pass to the query function, so if you call `let query = HeroQuery()` it will create a query
+
+```graphql
+query HeroQuery {
+  hero(episode: jedi) {
+    name
+  }
+}
+```
 
 ### Directives
 
@@ -287,14 +322,32 @@ TBD
 
 ### Meta fields
 
-TBD
+```graphql
+// GrahpQL
+
+query {
+  hero {
+    __typename
+    name
+  }
+}
+
+// Swift
+
+query {
+  hero {
+    \.__typename
+    \.name
+  }
+}
+```
 
 ### Limitations
 
 - as of Xcode 11 beta 1 functional builders do not properly work with single element (FB6159639), for that reason you have to add this overload for your root query functions:
 
 ```swift
-func hero<T1>(_ queryBlock: () -> KeyPath<Hero, T1>) -> GQLObjectQuery<Hero> {
+func hero<T>(_ queryBlock: () -> KeyPath<Hero, T>) -> GQLObjectQuery<Hero> {
   return GQLObjectQuery(keyPath: queryBlock())
 }
 ```
