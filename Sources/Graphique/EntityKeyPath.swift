@@ -10,7 +10,7 @@ func keyPathLookup<T: GQLEntity, U>(_ keyPath: KeyPath<T, U>) -> String {
     } else if keyPath == \T.__typename {
         return "__typename"
     } else {
-        print("Key path is not defined in \(T.self).GQLEntityKeyPaths")
+        precondition("Key path is not defined in \(T.self).GQLEntityKeyPaths")
         return "<<unknown>>"
     }
 }
