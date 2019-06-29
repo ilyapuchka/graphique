@@ -18,6 +18,13 @@ public struct GQLObjectQueryLens<Root: GQLEntity>: CustomStringConvertible {
             return "\(field) {\n\t\(fields)\n}"
         }
     }
+    
+    func map<T>(to type: T.Type = T.self) -> GQLObjectQueryLens<T> {
+        return GQLObjectQueryLens<T>(
+            field: field,
+            fields: fields
+        )
+    }
 }
 
 public func lens<Root: GQLEntity, T: GQLEntity>(_ keyPath: KeyPath<Root, T>, @GQLObjectQueryBuilder<T> _ query: () -> GQLObjectQuery<T>) -> GQLObjectQueryFields<Root> {

@@ -336,7 +336,34 @@ final class GraphiqueTests: XCTestCase {
 	}
 	
 	func testInlineFragments() {
-		// TBD
+		let heroQuery = query("") {
+			hero {
+				\.name
+				...on(Droid.self) {
+                    \.primaryFunction
+				}
+				...on(Human.self) {
+					\.height
+				}
+			}
+		}
+		
+		XCTAssertEqual(
+			heroQuery.description,
+			"""
+			query {
+				hero {
+					name
+					... on Droid {
+						primaryFunction
+					}
+					... on Human {
+						height
+					}
+				}
+			}
+			"""
+		)
 	}
 	
 	func testMetaFields() {

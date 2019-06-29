@@ -1,10 +1,18 @@
 import Graphique
 
-struct Hero {
-    let id: String
-    let name: String
-    let episode: Episode
-    let friends: [Hero]
+class Hero {
+    let id: String = ""
+    let name: String = ""
+    let episode: Episode = .empire
+    let friends: [Hero] = []
+}
+
+class Droid: Hero {
+    let primaryFunction: String = ""
+}
+
+class Human: Hero {
+    let height: Int = 0
 }
 
 enum Episode: String {
@@ -19,6 +27,9 @@ extension Hero: GQLEntity {
         let name            = \Hero.name
         let episode         = \Hero.episode
         let friends         = \Hero.friends
+
+        let primaryFunction = \Droid.primaryFunction
+        let height          = \Human.height
     }
 }
 

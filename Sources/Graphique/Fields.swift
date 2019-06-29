@@ -32,7 +32,13 @@ public struct GQLObjectQueryFields<Root: GQLEntity>: CustomStringConvertible {
         }
         if !fragments.isEmpty {
             result += "\n" + fragments
-                .map { "...\($0.name)" }
+                .map {
+                    var result = "...\($0.name)"
+                    if $0.isInline {
+                        result += " " + $0.description
+                    }
+                    return result
+                }
                 .joined(separator: "\n")
         }
         if !lenses.isEmpty {
@@ -42,6 +48,14 @@ public struct GQLObjectQueryFields<Root: GQLEntity>: CustomStringConvertible {
         }
 
         return result
+    }
+    
+    func map<T>(to type: T.Type = T.self) -> GQLObjectQueryFields<T> {
+        return GQLObjectQueryFields<T>(
+            fields: fields,
+            lenses: lenses.map { $0.map() },
+            fragments: fragments.map { $0.map() }
+        )
     }
 }
 

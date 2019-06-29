@@ -17,7 +17,9 @@ public struct GQLQuery<Root: GQLEntity>: CustomStringConvertible {
             }
             .joined(separator: "\n\t")
         
-        let allFragments = queries.flatMap { $0.fields.fragments }
+        let allFragments = queries
+            .flatMap { $0.fields.fragments }
+            .filter { !$0.isInline }
         
         let fragments = [String: String](zip(
             allFragments.map { $0.name },

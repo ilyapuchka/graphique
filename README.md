@@ -318,7 +318,35 @@ TBD
 
 ### Inline Fragments 
 
-TBD
+```graphql
+// GraphQL
+
+query {
+  hero {
+    name
+    ... on Droid {
+      primaryFunction
+    }
+    ... on Human {
+      height
+    }
+  }
+}
+
+// Swift
+
+query("") {
+  hero {
+    \.name
+    ...on(Droid.self) {
+      \.primaryFunction
+    }
+    ...on(Human.self) {
+      \.height
+    }
+  }
+}
+```
 
 ### Meta fields
 
@@ -351,3 +379,8 @@ func hero<T>(_ queryBlock: () -> KeyPath<Hero, T>) -> GQLObjectQuery<Hero> {
   return GQLObjectQuery(keyPath: queryBlock())
 }
 ```
+
+- inline fragments do not enforce types to be related, e.g. `Droid` and `Human` to be subtypes of `Hero`.
+- to use inline fragments you'll need to use classes for models, not structs
+
+
