@@ -10,6 +10,20 @@ public extension GQLObjectQueryArgumentsRepresentable where Self: RawRepresentab
     var argumentValue: String { "\(self.rawValue)" }
 }
 
+public extension GQLObjectQueryArgumentsRepresentable where Self: GQLEntity {
+    var argumentValue: String {
+        let mirror = Mirror(reflecting: Self.GQLEntityKeyPaths())
+        return """
+        {\n\t\(mirror.children.compactMap { (child) -> String? in
+            guard let key = child.label else { return nil }
+            guard let keyPath = child.value as? AnyKeyPath else { return nil }
+            guard let value = self[keyPath: keyPath] else { return nil }
+            return "\(key): \((value as? GQLObjectQueryArgumentsRepresentable)?.argumentValue ?? value)"
+        }.joined(separator: ",\n\t"))\n}
+        """
+    }
+}
+
 extension String: GQLObjectQueryArgumentsRepresentable {
     public var argumentValue: String { "\"\(self)\"" }
 }

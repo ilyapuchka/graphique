@@ -8,3 +8,9 @@ public extension GQLEntity {
     }
 }
 
+public struct Unit: GQLEntity {
+    public struct GQLEntityKeyPaths: GQLEntityKeyPath {
+        public init() {}
+    }
+}
+

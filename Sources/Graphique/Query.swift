@@ -1,10 +1,4 @@
-enum GQLQueryKind {
-    case query
-    case mutation
-}
-
 public struct GQLQuery<Root: GQLEntity>: CustomStringConvertible {
-    let kind: GQLQueryKind
     let name: String
     let queries: [GQLObjectQuery<Root>]
     
@@ -30,14 +24,14 @@ public struct GQLQuery<Root: GQLEntity>: CustomStringConvertible {
             .joined(separator: "\n\t")
         
         var name = self.name
+        if !name.isEmpty, let index = name.firstIndex(where: { $0 == "(" }) {
+            name = String(name.prefix(upTo: index))
+        }
         if !name.isEmpty {
-            if let index = name.firstIndex(where: { $0 == "(" }) {
-                name = String(name.prefix(upTo: index))
-            }
             name += " "
         }
 
-        result = "\(kind) \(name){\n\t\(result)\n}"
+        result = "query \(name){\n\t\(result)\n}"
         if !fragments.isEmpty {
             result += "\n\n" + fragments
         }
@@ -48,27 +42,18 @@ public struct GQLQuery<Root: GQLEntity>: CustomStringConvertible {
 @_functionBuilder
 public struct GQLQueryBuilder<T: GQLEntity> {
     public static func buildBlock(_ content: GQLObjectQuery<T>) -> GQLQuery<T> {
-        return GQLQuery(kind: .query, name: "", queries: [content])
+        return GQLQuery(name: "", queries: [content])
     }
     public static func buildBlock(_ content: GQLObjectQuery<T>...) -> GQLQuery<T> {
-        return GQLQuery(kind: .query, name: "", queries: content)
+        return GQLQuery(name: "", queries: content)
     }
 }
 
 // workaround for function builders not using single element builder
 public func query<T>(_ name: String = #function, _ queryBlock: () -> GQLObjectQuery<T>) -> GQLQuery<T> {
-    return GQLQuery(kind: .query, name: name, queries: [queryBlock()])
+    return GQLQuery(name: name, queries: [queryBlock()])
 }
 
 public func query<T>(_ name: String = #function, @GQLQueryBuilder<T> _ queryBlock: () -> GQLQuery<T>) -> GQLQuery<T> {
-    return GQLQuery(kind: .query, name: name, queries: queryBlock().queries)
-}
-
-// workaround for function builders not using single element builder
-public func mutation<T>(_ name: String = #function, _ queryBlock: () -> GQLObjectQuery<T>) -> GQLQuery<T> {
-    return GQLQuery(kind: .mutation, name: name, queries: [queryBlock()])
-}
-
-public func mutation<T>(_ name: String = #function, @GQLQueryBuilder<T> _ queryBlock: () -> [GQLObjectQuery<T>]) -> GQLQuery<T> {
-    return GQLQuery(kind: .mutation, name: name, queries: queryBlock())
+    return GQLQuery(name: name, queries: queryBlock().queries)
 }

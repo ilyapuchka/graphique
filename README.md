@@ -314,7 +314,41 @@ TBD
 
 ### Mutations
 
-TBD
+```graphql
+// GraphQL
+
+mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
+  createReview(episode: $ep, review: $review) {
+    stars
+    commentary
+  }
+}
+
+{
+  "ep": "JEDI",
+  "review": {
+    "stars": 5,
+    "commentary": "This is a great movie!"
+  }
+}
+
+// Swift
+
+func CreateReviewForEpisode(episode: Episode, review: Review) -> GQLMutation<CreateReview> {
+  mutation {
+    createReview {
+      arguments {
+        (\.episode, episode)
+        (\.review, review)
+      }
+      fields {
+        \.stars
+        \.commentary
+      }
+    }
+  }
+}
+```
 
 ### Inline Fragments 
 

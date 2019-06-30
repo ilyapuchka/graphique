@@ -332,8 +332,65 @@ final class GraphiqueTests: XCTestCase {
 	}
 	
 	func testMutation() {
-		// TBD
+        func CreateReviewForEpisode(episode: Episode, review: Review) -> GQLMutation<CreateReview<Review>> {
+            mutation {
+                createReview {
+                    arguments {
+                        (\.episode, episode)
+                        (\.review, review)
+                    }
+                    fields {
+                        \.stars
+                        \.commentary
+                    }
+                }
+            }
+        }
+        
+        XCTAssertEqual(
+            CreateReviewForEpisode(
+                episode: .jedi,
+                review: Review(commentary: "This is a great movie!", stars: 5)
+            ).description,
+			"""
+			mutation CreateReviewForEpisode {
+				createReview(episode: JEDI, review: {
+					commentary: "This is a great movie!",
+					stars: 5
+				}) {
+					stars
+					commentary
+				}
+			}
+			"""
+        )
 	}
+    
+    func testMutationWithoutReturn() {
+        func CreateReviewForEpisode(episode: Episode, review: Review) -> GQLMutation<CreateReview<Graphique.Unit>> {
+            mutation {
+                createReview {
+                    (\.episode, episode)
+                    (\.review, review)
+                }
+            }
+        }
+        
+        XCTAssertEqual(
+            CreateReviewForEpisode(
+                episode: .jedi,
+                review: Review(commentary: "This is a great movie!", stars: 5)
+			).description,
+			"""
+			mutation CreateReviewForEpisode {
+				createReview(episode: JEDI, review: {
+					commentary: "This is a great movie!",
+					stars: 5
+				})
+			}
+			"""
+        )
+    }
 	
 	func testInlineFragments() {
 		let heroQuery = query("") {
