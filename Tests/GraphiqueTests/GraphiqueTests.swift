@@ -49,13 +49,8 @@ final class GraphiqueTests: XCTestCase {
 
 	func testArguments() {
 		let heroQuery = query("") {
-			hero {
-				arguments {
-					(\.episode, .jedi)
-				}
-				fields {
-					\.name
-				}
+			hero(\.episode == .jedi) {
+                \.name
 			}
 		}
 		
@@ -73,15 +68,9 @@ final class GraphiqueTests: XCTestCase {
 	
 	func testMultipleArguments() {
 		let heroQuery = query("") {
-			hero {
-				arguments {
-					(\.id, "1000")
-					(\.episode, .jedi)
-				}
-				fields {
-					\.id
-					\.name
-				}
+			hero(\.id == "1000", \.episode == .jedi) {
+                \.id
+                \.name
 			}
 		}
 		
@@ -100,23 +89,13 @@ final class GraphiqueTests: XCTestCase {
 	
 	func testAliases() {
 		let heroQuery = query("") {
-			"empireHero" == hero {
-				arguments {
-					(\.episode, .empire)
-				}
-				fields {
-					\.id
-					\.name
-				}
+			"empireHero" == hero(\.episode == .empire) {
+                \.id
+                \.name
 			}
-			"jediHero" == hero {
-				arguments {
-					(\.episode, .jedi)
-				}
-				fields {
-					\.id
-					\.name
-				}
+			"jediHero" == hero(\.episode == .jedi) {
+                \.id
+                \.name
 			}
 		}
 		
@@ -141,7 +120,7 @@ final class GraphiqueTests: XCTestCase {
 		let comparisonFields = fragment("comparisonFields", on: Hero.self) {
 			\.id
 			\.name
-			
+
 			lens(\.friends) {
 				\.id
 				\.name
@@ -149,22 +128,14 @@ final class GraphiqueTests: XCTestCase {
 		}
 
 		let heroQuery = query("") {
-			"leftComparison" == hero {
-				arguments {
-					(\.episode, .empire)
-				}
+			"leftComparison" == hero(\.episode == .empire) {
 				...comparisonFields
 			}
-			"rightComparison" == hero {
-				arguments {
-					(\.episode, .jedi)
-				}
-				fields {
-					...comparisonFields
-				}
+			"rightComparison" == hero(\.episode == .jedi) {
+                ...comparisonFields
 			}
 		}
-		
+
 		XCTAssertEqual(
 			heroQuery.description,
 			"""
@@ -194,31 +165,23 @@ final class GraphiqueTests: XCTestCase {
 			fragment {
 				\.id
 				\.name
-				
+
 				lens(\.friends) {
 					\.id
 					\.name
 				}
 			}
 		}
-		
+
 		let heroQuery = query("") {
-			"leftComparison" == hero {
-				arguments {
-					(\.episode, .empire)
-				}
+			"leftComparison" == hero(\.episode == .empire) {
 				...comparisonFields
 			}
-			"rightComparison" == hero {
-				arguments {
-					(\.episode, .jedi)
-				}
-				fields {
-					...comparisonFields
-				}
+			"rightComparison" == hero(\.episode == .jedi) {
+                ...comparisonFields
 			}
 		}
-		
+
 		XCTAssertEqual(
 			heroQuery.description,
 			"""
@@ -245,14 +208,9 @@ final class GraphiqueTests: XCTestCase {
 	
 	func testNamedQuery() {
 		let heroQuery = query("HeroQuery") {
-			hero {
-				arguments {
-					(\.episode, .jedi)
-				}
-				fields {
-					\.id
-					\.name
-				}
+			hero(\.episode == .jedi) {
+                \.id
+                \.name
 			}
 		}
 		
@@ -272,14 +230,9 @@ final class GraphiqueTests: XCTestCase {
 	func testNamedQueryInFunction() {
 		func HeroQuery() -> GQLQuery<Hero> {
 			query {
-				hero {
-					arguments {
-						(\.episode, .jedi)
-					}
-					fields {
-						\.id
-						\.name
-					}
+				hero(\.episode == .jedi) {
+                    \.id
+                    \.name
 				}
 			}
 		}
@@ -300,13 +253,8 @@ final class GraphiqueTests: XCTestCase {
 	func testVariables() {
         func HeroQuery(episode: Episode = .jedi) -> GQLQuery<Hero> {
             query {
-                hero {
-                    arguments {
-                        (\.episode, episode)
-                    }
-                    fields {
-                        \.name
-                    }
+                hero(\.episode == episode) {
+                    \.name
                 }
             }
         }
@@ -334,15 +282,9 @@ final class GraphiqueTests: XCTestCase {
 	func testMutation() {
         func CreateReviewForEpisode(episode: Episode, review: Review) -> GQLMutation<CreateReview<Review>> {
             mutation {
-                createReview {
-                    arguments {
-                        (\.episode, episode)
-                        (\.review, review)
-                    }
-                    fields {
-                        \.stars
-                        \.commentary
-                    }
+                createReview(\.episode == episode, \.review == review) {
+                    \.stars
+                    \.commentary
                 }
             }
         }
@@ -369,10 +311,7 @@ final class GraphiqueTests: XCTestCase {
     func testMutationWithoutReturn() {
         func CreateReviewForEpisode(episode: Episode, review: Review) -> GQLMutation<CreateReview<Graphique.Unit>> {
             mutation {
-                createReview {
-                    (\.episode, episode)
-                    (\.review, review)
-                }
+                createReview(\.episode == episode, \.review == review)
             }
         }
         

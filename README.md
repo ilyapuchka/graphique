@@ -49,16 +49,16 @@ This conformance is used to convert argument values you use in a query to string
 - Define your "root" query function
 
 ```swift
-func hero(@GQLObjectQueryBuilder<Hero> _ queryBlock: () -> GQLObjectQuery<Hero>) -> GQLObjectQuery<Hero> {
-  return GQLObjectQuery(queryBlock)
+func hero(_ arguments: GQLObjectQueryArguments<Hero>..., @GQLObjectQueryBuilder<Hero> queryBlock: () -> GQLObjectQuery<Hero>) -> GQLObjectQuery<Hero> {
+  return GQLObjectQuery(arguments, queryBlock)
 }
 ```
 
 You will use this function in a query to specify the actualy type of a query you want to perform. All your root query functions will look identical. I.e. if you want to query all episodes you will add the following function:
 
 ```swift
-func episode(@GQLObjectQueryBuilder<Episode> _ queryBlock: () -> GQLObjectQuery<Episode>) -> GQLObjectQuery<Episode> {
-  return GQLObjectQuery(queryBlock)
+func episode(_ arguments: GQLObjectQueryArguments<Episodes>..., @GQLObjectQueryBuilder<Episode> queryBlock: () -> GQLObjectQuery<Episode>) -> GQLObjectQuery<Episode> {
+  return GQLObjectQuery(arguments, queryBlock)
 }
 ```
 
@@ -104,13 +104,8 @@ query {
 // Swift
 
 query("") {
-  hero {
-    arguments {
-      (\.episode, .jedi)
-    }
-    fields {
-      \.name
-    }
+  hero(\.episode == .jedi) {
+    \.name
   }
 }
 ```
@@ -134,23 +129,13 @@ query {
 // Swift
 
 query("") {
-  "empireHero" == hero {
-    arguments {
-      (\.episode, .empire)
-    }
-    fields {
-      \.id
-      \.name
-    }
+  "empireHero" == hero(\.episode == .empire) {
+    \.id
+    \.name
   }
-  "jediHero" == hero {
-    arguments {
-      (\.episode, .jedi)
-    }
-    fields {
-      \.id
-      \.name
-    }
+  "jediHero" == hero(\.episode == .jedi) {
+    \.id
+    \.name
   }
 }
 ```
@@ -205,19 +190,11 @@ var comparisonFields: GQLObjectQueryFragment<Hero> {
 }
 
 query("") {
-  "leftComparison" == hero {
-    arguments {
-      (\.episode, .empire)
-    }
+  "leftComparison" == hero(\.episode == .empire) {
     ...comparisonFields
   }
-  "rightComparison" == hero {
-    arguments {
-      (\.episode, .jedi)
-    }
-    fields {
-      ...comparisonFields
-    }
+  "rightComparison" == hero(\.episode == .jedi) {
+    ...comparisonFields
   }
 }
 ```
@@ -241,14 +218,9 @@ query HeroQuery {
 // Swift
 
 query("HeroQuery") {
-  hero {
-    arguments {
-      (\.episode, .jedi)
-    }
-    fields {
-      \.id
-      \.name
-    }
+  hero(\.episode, .jedi) {
+    \.id
+    \.name
   }
 }
 
@@ -256,14 +228,9 @@ query("HeroQuery") {
 
 func HeroQuery() -> GQLQuery<Hero> {
   query {
-    hero {
-      arguments {
-        (\.episode, .jedi)
-      }
-      fields {
-        \.id
-        \.name
-      }
+    hero(\.episode, .jedi) {
+      \.id
+      \.name
     }
   }
 }
@@ -286,13 +253,8 @@ query HeroQuery($episode: Episode = JEDI) {
 
 func HeroQuery(episode: Episode = .jedi) -> GQLQuery<Hero> {
   query {
-    hero {
-      arguments {
-        (\.episode, episode)
-      }
-      fields {
-        \.name
-      }
+    hero(\.episode == episode) {
+      \.name
     }
   }
 }
@@ -336,15 +298,9 @@ mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
 
 func CreateReviewForEpisode(episode: Episode, review: Review) -> GQLMutation<CreateReview> {
   mutation {
-    createReview {
-      arguments {
-        (\.episode, episode)
-        (\.review, review)
-      }
-      fields {
-        \.stars
-        \.commentary
-      }
+    createReview(\.episode == episode, \.review == review) {
+      \.stars
+      \.commentary
     }
   }
 }

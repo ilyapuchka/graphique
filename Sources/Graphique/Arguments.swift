@@ -47,6 +47,10 @@ public struct GQLObjectQueryArguments<Root: GQLEntity>: CustomStringConvertible 
 
 @_functionBuilder
 public struct GQLObjectQueryArgumentsBuilder<Root: GQLEntity> {
+    public static func buildBlock(_ arguments: GQLObjectQueryArguments<Root>...) -> GQLObjectQueryArguments<Root> {
+        return arguments.reduce(.empty(), +)
+    }
+    
     public static func buildBlock<F1: GQLObjectQueryArgumentsRepresentable>(_ filter1: (KeyPath<Root, F1>, F1)) -> GQLObjectQueryArguments<Root> {
         return GQLObjectQueryArguments(
             arguments: [
@@ -87,3 +91,6 @@ public func arguments<Root: GQLEntity, F1: GQLObjectQueryArgumentsRepresentable>
     )
 }
 
+public func ==<T: GQLEntity, U: GQLObjectQueryArgumentsRepresentable>(lhs: KeyPath<T, U>, rhs: U) -> GQLObjectQueryArguments<T> {
+    return GQLObjectQueryArguments(arguments: ["\(keyPathLookup(lhs)): \(rhs.argumentValue)"])
+}

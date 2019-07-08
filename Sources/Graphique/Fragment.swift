@@ -35,8 +35,8 @@ public func fragment<T>(_ name: String, on: T.Type, @GQLObjectQueryFieldsBuilder
 }
 
 prefix operator ...
-public prefix func ...<T>(_ value: GQLObjectQueryFragment<T>) -> GQLObjectQueryFields<T> {
-    return GQLObjectQueryFields(fields: [], fragments: [value])
+public prefix func ...<T>(_ value: GQLObjectQueryFragment<T>) -> GQLObjectQuery<T> {
+    return GQLObjectQuery(fields: GQLObjectQueryFields(fields: [], fragments: [value]))
 }
 
 /// Does not enforce `SubType: T` as it's not expressible with Swift generics
