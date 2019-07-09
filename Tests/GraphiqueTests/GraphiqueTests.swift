@@ -272,7 +272,53 @@ final class GraphiqueTests: XCTestCase {
 	}
 	
 	func testFragmentVariables() {
-		// TBD
+        func comparisonFields(id: String) -> GQLObjectQueryFragment<Hero> {
+			fragment {
+				\.id
+				\.name
+
+				lens(\.friends, \.id == id) {
+                    \.id
+                    \.name
+				}
+			}
+		}
+
+        // [Swift bug] using functions here instead of a closure makes
+        // compiler to use method without builder
+		let heroQuery = { (id: String) in
+			query("HeroQuery") {
+				"leftComparison" == hero(\.episode == .empire) {
+                    ...comparisonFields(id: id)
+				}
+				"rightComparison" == hero(\.episode == .jedi) {
+                    ...comparisonFields(id: id)
+				}
+			}
+		}
+
+		XCTAssertEqual(
+			heroQuery("1000").description,
+			"""
+			query HeroQuery {
+				leftComparison: hero(episode: EMPIRE) {
+					...comparisonFields
+				}
+				rightComparison: hero(episode: JEDI) {
+					...comparisonFields
+				}
+			}
+
+			fragment comparisonFields on Hero {
+				id
+				name
+				friends(id: "1000") {
+					id
+					name
+				}
+			}
+			"""
+		)
 	}
 	
 	func testDirectives() {

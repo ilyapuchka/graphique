@@ -2,6 +2,18 @@ public struct GQLObjectQueryFragment<Root: GQLEntity>: CustomStringConvertible {
     let name: String
     let fields: GQLObjectQueryFields<Root>
     
+    init(
+        name: String,
+        fields: GQLObjectQueryFields<Root>
+    ) {
+        var name = name
+        if let index = name.firstIndex(where: { $0 == "(" }) {
+            name = String(name.prefix(upTo: index))
+        }
+        self.name = name
+        self.fields = fields
+    }
+    
     var isInline: Bool {
         return name.hasPrefix(" on ")
     }
