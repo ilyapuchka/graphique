@@ -48,26 +48,22 @@ extension Episode: GQLObjectQueryArgumentsRepresentable {}
 
 This conformance is used to convert argument values you use in a query to strings (default implementation is provided by the library so there is no need for you to add any implementation details).
 
-- Define your "root" query function
+- Define your "root" query object
 
 ```swift
-func hero(
-    _ arguments: GQLObjectQueryArguments<Hero>..., 
-    @GQLObjectQueryBuilder<Hero> queryBlock: () -> GQLObjectQuery<Hero>
-) -> GQLObjectQuery<Hero> {
-  return GQLObjectQuery(arguments, queryBlock)
-}
+let hero = Query<Hero>("hero")
 ```
 
-You will use this function in a query to specify the actual type of a query you want to perform. All your root query functions will look identical. I.e. if you want to query all episodes you will add the following function:
+You will use this function in a query to specify the actual type of a query you want to perform, i.e. if you want to query all episodes you will add the following query object:
 
 ```swift
-func episode(
-    _ arguments: GQLObjectQueryArguments<Episodes>..., 
-    @GQLObjectQueryBuilder<Episode> queryBlock: () -> GQLObjectQuery<Episode>
-) -> GQLObjectQuery<Episode> {
-  return GQLObjectQuery(arguments, queryBlock)
-}
+let episode = Query<Episode>("episode")
+```
+
+Or you can use string literals to give names to your queries (or mutations):
+
+```swift
+let hero: Query<Hero> = "hero"
 ```
 
 With that you can start building your queries.
@@ -303,6 +299,7 @@ mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
 }
 
 // Swift
+let createReview = Mutation<CreateReview>("createReview")
 
 func CreateReviewForEpisode(episode: Episode, review: Review) -> GQLMutation<CreateReview> {
   mutation {
@@ -369,14 +366,6 @@ query {
 ```
 
 ### Limitations
-
-- as of Xcode 11 beta 1 functional builders do not properly work with single element (FB6159639), for that reason you have to add this overload for your root query functions:
-
-```swift
-func hero<T>(_ queryBlock: () -> KeyPath<Hero, T>) -> GQLObjectQuery<Hero> {
-  return GQLObjectQuery(keyPath: queryBlock())
-}
-```
 
 - inline fragments do not enforce types to be related, e.g. `Droid` and `Human` to be subtypes of `Hero`.
 - to use inline fragments you'll need to use classes for models, not structs

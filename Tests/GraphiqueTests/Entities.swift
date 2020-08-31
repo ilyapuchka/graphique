@@ -1,5 +1,7 @@
 import Graphique
 
+let hero: Query<Hero> = "hero"
+
 class Hero {
     let id: String = ""
     let name: String = ""
@@ -25,6 +27,8 @@ struct Review {
     let commentary: String
     let stars: Int
 }
+
+let createReview: Mutation<CreateReview<Review>> = "createReview"
 
 struct CreateReview<T: GQLEntity> {
     let episode: Episode
@@ -61,22 +65,4 @@ extension CreateReview: GQLInput {
         let episode = \CreateReview.episode
         let review  = \CreateReview.review
     }
-}
-
-func hero(
-    _ arguments: GQLObjectQueryArguments<Hero>...,
-    @GQLObjectQueryBuilder<Hero> queryBlock: () -> GQLObjectQuery<Hero>
-) -> GQLObjectQuery<Hero> {
-    GQLObjectQuery(arguments, queryBlock)
-}
-
-func createReview(
-    _ arguments: GQLObjectQueryArguments<CreateReview<Review>>...,
-    @GQLMutationQueryBuilder<CreateReview<Review>> queryBlock: () -> GQLMutationQuery<CreateReview<Review>>
-) -> GQLMutationQuery<CreateReview<Review>> {
-    GQLMutationQuery(arguments, queryBlock)
-}
-
-func createReview(_ arguments: GQLObjectQueryArguments<CreateReview<Unit>>...) -> GQLMutationQuery<CreateReview<Unit>> {
-    return GQLMutationQuery(arguments)
 }

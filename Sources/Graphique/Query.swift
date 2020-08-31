@@ -52,3 +52,19 @@ public struct GQLQueryBuilder<T: GQLEntity> {
 public func query<T>(_ name: String = #function, @GQLQueryBuilder<T> _ queryBlock: () -> GQLQuery<T>) -> GQLQuery<T> {
     return GQLQuery(name: name, queries: queryBlock().queries)
 }
+
+public struct Query<T: GQLEntity>: ExpressibleByStringLiteral {
+    let name: String
+    public init(_ name: String) {
+        self.name = name
+    }
+    public init(stringLiteral name: String) {
+        self.name = name
+    }
+    public func callAsFunction(
+        _ arguments: GQLObjectQueryArguments<T>...,
+        @GQLObjectQueryBuilder<T> queryBlock: () -> GQLObjectQuery<T>
+    ) -> GQLObjectQuery<T> {
+        GQLObjectQuery(name: name, arguments, queryBlock)
+    }
+}

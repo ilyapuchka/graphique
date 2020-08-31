@@ -27,3 +27,24 @@ public func mutation<T: GQLInput>(_ name: String = #function, _ queryBlock: () -
     return GQLMutation(name: name, query: queryBlock())
 }
 
+public struct Mutation<T: GQLInput>: ExpressibleByStringLiteral {
+    let name: String
+    public init(_ name: String) {
+        self.name = name
+    }
+    public init(stringLiteral name: String) {
+        self.name = name
+    }
+    public func callAsFunction(
+        _ arguments: GQLObjectQueryArguments<T>...,
+        @GQLMutationQueryBuilder<T> queryBlock: () -> GQLMutationQuery<T>
+    ) -> GQLMutationQuery<T> {
+        GQLMutationQuery(name: name, arguments, queryBlock)
+    }
+
+    public func callAsFunction(
+        _ arguments: GQLObjectQueryArguments<T>...
+    ) -> GQLMutationQuery<T> {
+        GQLMutationQuery(name: name, arguments: arguments.reduce(.empty(), +), fields: .empty())
+    }
+}

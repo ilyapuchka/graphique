@@ -382,7 +382,7 @@ final class GraphiqueTests: XCTestCase {
 	}
 
     func testMutationWithoutReturn() {
-        func CreateReviewForEpisode(episode: Episode, review: Review) -> GQLMutation<CreateReview<Graphique.Unit>> {
+        func CreateReviewForEpisode(episode: Episode, review: Review) -> GQLMutation<CreateReview<Review>> {
             mutation {
 				createReview(\.episode == episode, \.review == review)
             }
