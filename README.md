@@ -2,6 +2,8 @@
 
 This library attempts to implement GraphQL query DSL using Swift 5.1 function builders.
 
+Note: updated for Xcode 12 beta 6
+
 To start you define your models as regular Swift types:
 
 ```swift
@@ -49,15 +51,21 @@ This conformance is used to convert argument values you use in a query to string
 - Define your "root" query function
 
 ```swift
-func hero(_ arguments: GQLObjectQueryArguments<Hero>..., @GQLObjectQueryBuilder<Hero> queryBlock: () -> GQLObjectQuery<Hero>) -> GQLObjectQuery<Hero> {
+func hero(
+    _ arguments: GQLObjectQueryArguments<Hero>..., 
+    @GQLObjectQueryBuilder<Hero> queryBlock: () -> GQLObjectQuery<Hero>
+) -> GQLObjectQuery<Hero> {
   return GQLObjectQuery(arguments, queryBlock)
 }
 ```
 
-You will use this function in a query to specify the actualy type of a query you want to perform. All your root query functions will look identical. I.e. if you want to query all episodes you will add the following function:
+You will use this function in a query to specify the actual type of a query you want to perform. All your root query functions will look identical. I.e. if you want to query all episodes you will add the following function:
 
 ```swift
-func episode(_ arguments: GQLObjectQueryArguments<Episodes>..., @GQLObjectQueryBuilder<Episode> queryBlock: () -> GQLObjectQuery<Episode>) -> GQLObjectQuery<Episode> {
+func episode(
+    _ arguments: GQLObjectQueryArguments<Episodes>..., 
+    @GQLObjectQueryBuilder<Episode> queryBlock: () -> GQLObjectQuery<Episode>
+) -> GQLObjectQuery<Episode> {
   return GQLObjectQuery(arguments, queryBlock)
 }
 ```

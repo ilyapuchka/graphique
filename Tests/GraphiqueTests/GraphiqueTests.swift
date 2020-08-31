@@ -3,7 +3,7 @@ import Graphique
 
 final class GraphiqueTests: XCTestCase {
     
-    func testFields() {
+    func testOneField() {
         let heroQuery = query("") {
             hero {
 				\.name
@@ -21,17 +21,41 @@ final class GraphiqueTests: XCTestCase {
 			"""
 		)
     }
-	
+
+    func testTwoFields() {
+        let heroQuery = query("") {
+            hero {
+                \.name
+                \.episode
+            }
+        }
+
+		XCTAssertEqual(
+            heroQuery.description,
+            """
+			query {
+				hero {
+					name
+					episode
+				}
+			}
+			"""
+        )
+    }
+
 	func testMultipleFields() {
 		let heroQuery = query("") {
 			hero {
 				\.name
 				lens(\.friends) {
 					\.name
+					lens(\.friends) {
+						\.name
+					}
 				}
 			}
 		}
-		
+
 		XCTAssertEqual(
 			heroQuery.description,
 			"""
@@ -40,6 +64,9 @@ final class GraphiqueTests: XCTestCase {
 					name
 					friends {
 						name
+						friends {
+							name
+						}
 					}
 				}
 			}
@@ -53,7 +80,7 @@ final class GraphiqueTests: XCTestCase {
                 \.name
 			}
 		}
-		
+
 		XCTAssertEqual(
 			heroQuery.description,
 			"""
@@ -65,7 +92,7 @@ final class GraphiqueTests: XCTestCase {
 			"""
 		)
 	}
-	
+
 	func testMultipleArguments() {
 		let heroQuery = query("") {
 			hero(\.id == "1000", \.episode == .jedi) {
@@ -73,7 +100,7 @@ final class GraphiqueTests: XCTestCase {
                 \.name
 			}
 		}
-		
+
 		XCTAssertEqual(
 			heroQuery.description,
 			"""
@@ -86,7 +113,7 @@ final class GraphiqueTests: XCTestCase {
 			"""
 		)
 	}
-	
+
 	func testAliases() {
 		let heroQuery = query("") {
 			"empireHero" == hero(\.episode == .empire) {
@@ -98,7 +125,7 @@ final class GraphiqueTests: XCTestCase {
                 \.name
 			}
 		}
-		
+
 		XCTAssertEqual(
 			heroQuery.description,
 			"""
@@ -115,7 +142,7 @@ final class GraphiqueTests: XCTestCase {
 			"""
 		)
 	}
-	
+
 	func testFragments() {
 		let comparisonFields = fragment("comparisonFields", on: Hero.self) {
 			\.id
@@ -159,7 +186,7 @@ final class GraphiqueTests: XCTestCase {
 			"""
 		)
 	}
-	
+
 	func testFragmentsAsComputedProperty() {
 		var comparisonFields: GQLObjectQueryFragment<Hero> {
 			fragment {
@@ -205,7 +232,7 @@ final class GraphiqueTests: XCTestCase {
 			"""
 		)
 	}
-	
+
 	func testNamedQuery() {
 		let heroQuery = query("HeroQuery") {
 			hero(\.episode == .jedi) {
@@ -213,7 +240,7 @@ final class GraphiqueTests: XCTestCase {
                 \.name
 			}
 		}
-		
+
 		XCTAssertEqual(
 			heroQuery.description,
 			"""
@@ -226,7 +253,7 @@ final class GraphiqueTests: XCTestCase {
 			"""
 		)
 	}
-	
+
 	func testNamedQueryInFunction() {
 		func HeroQuery() -> GQLQuery<Hero> {
 			query {
@@ -236,7 +263,7 @@ final class GraphiqueTests: XCTestCase {
 				}
 			}
 		}
-		
+
 		XCTAssertEqual(
 			HeroQuery().description,
 			"""
@@ -249,7 +276,7 @@ final class GraphiqueTests: XCTestCase {
 			"""
 		)
 	}
-	
+
 	func testVariables() {
         func HeroQuery(episode: Episode = .jedi) -> GQLQuery<Hero> {
             query {
@@ -270,7 +297,7 @@ final class GraphiqueTests: XCTestCase {
 			"""
 		)
 	}
-	
+
 	func testFragmentVariables() {
         func comparisonFields(id: String) -> GQLObjectQueryFragment<Hero> {
 			fragment {
@@ -320,11 +347,11 @@ final class GraphiqueTests: XCTestCase {
 			"""
 		)
 	}
-	
+
 	func testDirectives() {
 		// TBD
 	}
-	
+
 	func testMutation() {
         func CreateReviewForEpisode(episode: Episode, review: Review) -> GQLMutation<CreateReview<Review>> {
             mutation {
@@ -334,7 +361,7 @@ final class GraphiqueTests: XCTestCase {
                 }
             }
         }
-        
+
         XCTAssertEqual(
             CreateReviewForEpisode(
                 episode: .jedi,
@@ -353,14 +380,14 @@ final class GraphiqueTests: XCTestCase {
 			"""
         )
 	}
-    
+
     func testMutationWithoutReturn() {
         func CreateReviewForEpisode(episode: Episode, review: Review) -> GQLMutation<CreateReview<Graphique.Unit>> {
             mutation {
-                createReview(\.episode == episode, \.review == review)
+				createReview(\.episode == episode, \.review == review)
             }
         }
-        
+
         XCTAssertEqual(
             CreateReviewForEpisode(
                 episode: .jedi,
@@ -376,7 +403,7 @@ final class GraphiqueTests: XCTestCase {
 			"""
         )
     }
-	
+
 	func testInlineFragments() {
 		let heroQuery = query("") {
 			hero {
@@ -389,7 +416,7 @@ final class GraphiqueTests: XCTestCase {
 				}
 			}
 		}
-		
+
 		XCTAssertEqual(
 			heroQuery.description,
 			"""
@@ -407,7 +434,7 @@ final class GraphiqueTests: XCTestCase {
 			"""
 		)
 	}
-	
+
 	func testMetaFields() {
 		let heroQuery = query("") {
 			hero {
@@ -415,7 +442,7 @@ final class GraphiqueTests: XCTestCase {
 				\.name
 			}
 		}
-		
+
 		XCTAssertEqual(
 			heroQuery.description,
 			"""
@@ -428,5 +455,5 @@ final class GraphiqueTests: XCTestCase {
 			"""
 		)
 	}
-    
+
 }

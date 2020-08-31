@@ -47,8 +47,8 @@ public func fragment<T>(_ name: String, on: T.Type, @GQLObjectQueryFieldsBuilder
 }
 
 prefix operator ...
-public prefix func ...<T>(_ value: GQLObjectQueryFragment<T>) -> GQLObjectQuery<T> {
-    return GQLObjectQuery(fields: GQLObjectQueryFields(fields: [], fragments: [value]))
+public prefix func ...<T>(_ value: GQLObjectQueryFragment<T>) -> GQLObjectQueryFields<T> {
+    GQLObjectQueryFields(fields: [], fragments: [value])
 }
 
 /// Does not enforce `SubType: T` as it's not expressible with Swift generics
@@ -58,12 +58,3 @@ public func on<T: GQLEntity, U: GQLEntity>(_ type: U.Type, @GQLObjectQueryFields
         fields: query().map()
     )
 }
-
-// workaround for single argument
-public func on<T: GQLEntity, U: GQLEntity, V>(_ type: U.Type, _ kp1: () -> KeyPath<U, V>) -> GQLObjectQueryFragment<T> {
-    return GQLObjectQueryFragment<T>(
-        name: " on \(U.self)",
-        fields: fields(kp1).map()
-    )
-}
-

@@ -63,17 +63,18 @@ extension CreateReview: GQLInput {
     }
 }
 
-func hero(_ arguments: GQLObjectQueryArguments<Hero>..., @GQLObjectQueryBuilder<Hero> queryBlock: () -> GQLObjectQuery<Hero>) -> GQLObjectQuery<Hero> {
-    return GQLObjectQuery(arguments, queryBlock)
+func hero(
+    _ arguments: GQLObjectQueryArguments<Hero>...,
+    @GQLObjectQueryBuilder<Hero> queryBlock: () -> GQLObjectQuery<Hero>
+) -> GQLObjectQuery<Hero> {
+    GQLObjectQuery(arguments, queryBlock)
 }
 
-// workaround for single argument
-func hero<T>(_ arguments: GQLObjectQueryArguments<Hero>..., queryBlock: () -> KeyPath<Hero, T>) -> GQLObjectQuery<Hero> {
-    return GQLObjectQuery(arguments, queryBlock())
-}
-
-func createReview(_ arguments: GQLObjectQueryArguments<CreateReview<Review>>..., @GQLMutationQueryBuilder<CreateReview<Review>> queryBlock: () -> GQLMutationQuery<CreateReview<Review>>) -> GQLMutationQuery<CreateReview<Review>> {
-    return GQLMutationQuery(arguments, queryBlock)
+func createReview(
+    _ arguments: GQLObjectQueryArguments<CreateReview<Review>>...,
+    @GQLMutationQueryBuilder<CreateReview<Review>> queryBlock: () -> GQLMutationQuery<CreateReview<Review>>
+) -> GQLMutationQuery<CreateReview<Review>> {
+    GQLMutationQuery(arguments, queryBlock)
 }
 
 func createReview(_ arguments: GQLObjectQueryArguments<CreateReview<Unit>>...) -> GQLMutationQuery<CreateReview<Unit>> {

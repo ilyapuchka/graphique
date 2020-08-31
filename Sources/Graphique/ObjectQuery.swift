@@ -77,47 +77,17 @@ public struct GQLObjectQuery<Root: GQLEntity>: CustomStringConvertible {
 
 @_functionBuilder
 public struct GQLObjectQueryBuilder<Root: GQLEntity> {
-    public static func buildBlock(_ rest: GQLObjectQueryFields<Root>) -> GQLObjectQuery<Root> {
-        return GQLObjectQuery(name: "", fields: rest)
+    public static func buildExpression(_ fields: GQLObjectQueryFields<Root>) -> GQLObjectQueryFields<Root> {
+        fields
+    }
+    public static func buildExpression<T>(_ kp: KeyPath<Root, T>) -> GQLObjectQueryFields<Root> {
+        GQLObjectQueryFields(fields: [keyPathLookup(kp)])
     }
 
-    public static func buildBlock(_ rest: GQLObjectQueryFields<Root>...) -> GQLObjectQuery<Root> {
-        return GQLObjectQuery(
-            name: "",
-            fields: rest.reduce(GQLObjectQueryFields(fields: []), +)
-        )
+    public static func buildBlock(_ fields: GQLObjectQueryFields<Root>) -> GQLObjectQuery<Root> {
+        GQLObjectQuery(name: "", fields: fields)
     }
-    public static func buildBlock<T1>(_ kp1: KeyPath<Root, T1>) -> GQLObjectQuery<Root> {
-        return GQLObjectQuery(
-            fields: GQLObjectQueryFields(
-                fields: [
-                    keyPathLookup(kp1)
-                ])
-        )
-    }
-    public static func buildBlock<T1>(_ kp1: KeyPath<Root, T1>, _ rest: GQLObjectQuery<Root>...) -> GQLObjectQuery<Root> {
-        return rest.reduce(GQLObjectQuery(name: "", fields: GQLObjectQueryFields(
-            fields: [
-                keyPathLookup(kp1)
-        ])), +)
-    }
-    public static func buildBlock<T1, T2>(_ kp1: KeyPath<Root, T1>, _ kp2: KeyPath<Root, T2>, _ rest: GQLObjectQuery<Root>...) -> GQLObjectQuery<Root> {
-        return rest.reduce(GQLObjectQuery(name: "", fields: GQLObjectQueryFields(
-            fields: [
-                keyPathLookup(kp1),
-                keyPathLookup(kp2)
-        ])), +)
-    }
-    public static func buildBlock<T1, T2, T3>(_ kp1: KeyPath<Root, T1>, _ kp2: KeyPath<Root, T2>, _ kp3: KeyPath<Root, T3>, _ rest: GQLObjectQuery<Root>...) -> GQLObjectQuery<Root> {
-        return rest.reduce(GQLObjectQuery(name: "", fields: GQLObjectQueryFields(
-            fields: [
-                keyPathLookup(kp1),
-                keyPathLookup(kp2),
-                keyPathLookup(kp3)
-        ])), +)
-    }
-
-    public static func buildBlock(_ arguments: GQLObjectQueryArguments<Root>, _ fields: GQLObjectQueryFields<Root>) -> GQLObjectQuery<Root> {
-        return GQLObjectQuery(name: "", arguments: arguments, fields: fields)
+    public static func buildBlock(_ fields: GQLObjectQueryFields<Root>...) -> GQLObjectQuery<Root> {
+        GQLObjectQuery(name: "", fields: fields.reduce(GQLObjectQueryFields(fields: []), +))
     }
 }

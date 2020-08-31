@@ -41,17 +41,12 @@ public struct GQLQuery<Root: GQLEntity>: CustomStringConvertible {
 
 @_functionBuilder
 public struct GQLQueryBuilder<T: GQLEntity> {
-    public static func buildBlock(_ content: GQLObjectQuery<T>) -> GQLQuery<T> {
-        return GQLQuery(name: "", queries: [content])
+    public static func buildExpression(_ content: GQLObjectQuery<T>) -> GQLObjectQuery<T> {
+        content
     }
     public static func buildBlock(_ content: GQLObjectQuery<T>...) -> GQLQuery<T> {
-        return GQLQuery(name: "", queries: content)
+        GQLQuery(name: "", queries: content)
     }
-}
-
-// workaround for function builders not using single element builder
-public func query<T>(_ name: String = #function, _ queryBlock: () -> GQLObjectQuery<T>) -> GQLQuery<T> {
-    return GQLQuery(name: name, queries: [queryBlock()])
 }
 
 public func query<T>(_ name: String = #function, @GQLQueryBuilder<T> _ queryBlock: () -> GQLQuery<T>) -> GQLQuery<T> {
